@@ -1,2 +1,2 @@
 # neopixel_lightning
-Ambience and lightning effects using neopixels
+Ambience and lightning effects using neopixel strip
