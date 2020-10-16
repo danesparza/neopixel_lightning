@@ -16,35 +16,6 @@
 int lightning_brightness = 100;
 int ambient_brightness = 10;
 
-struct RGB {
-  byte r;
-  byte g;
-  byte b;
-};
-
-//  The flame color array (the first is the default):
-RGB flameColors[] = {
-  { 226, 121, 35},  // Orange flame
-  { 158, 8, 148},   // Purple flame 
-  { 74, 150, 12},   // Green flame
-  { 226, 15, 30}    // Red flame
-  };
-
-//  Number of flame colors
-int NUMBER_OF_COLORS = sizeof(flameColors) / sizeof(RGB);
-
-//  Tracks the current color
-int currentColorIndex = 0;
-
-//  The button pin
-const int buttonPin = 2;
-
-//  Variable for reading the pushbutton status
-int buttonState = 0;         
-
-//  Tracking if it's ok to shift colors or not
-bool okToChangeColors = true;
-
 // Parameter 1 = number of pixels in strip
 // Parameter 2 = Arduino pin number (most are valid)
 // Parameter 3 = pixel type flags, add together as needed:
@@ -62,21 +33,22 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, NEO_GRB + NEO_KH
 // https://learn.adafruit.com/adafruit-neopixel-uberguide/overview
 
 void setup() {
+  /*
   Serial.begin(9600);
   Serial.print(NUMBER_OF_COLORS);
+  */
   
   strip.begin();
   strip.setBrightness(ambient_brightness);
   strip.show(); // Initialize all pixels to 'off'
-
-  // initialize the pushbutton pin as an input:
-  pinMode(buttonPin, INPUT);
 }
 
 void loop() {
+  //  Set our initial ambient light:
   set_ambient_lighting(4, 0, 26);
-  delay(5000);
   
+  /*
+  //  LS1
   lightening_pulse(100);
   delay(100); //  Gap length
   
@@ -91,14 +63,22 @@ void loop() {
 
   lightening_pulse(10);
   delay(10); //  Gap length
+  //  LS1 END
+  */
 
+  //  Pick a random lightning 'roll' time:
+  int randRoll = random(500, 3500);
+  lightening_rando_pulse(randRoll);
+
+  //  Switch back to ambient light:
   set_ambient_lighting(4, 0, 26);
   
   //  Adjust the delay here, if you'd like.  Right now, it randomizes the 
   //  color switch delay to give a sense of realism
-  delay(random(1000,7000));
+  delay(random(5000,15000));
 }
 
+//  'Pulse' lightning for the specified amount of time (in milliseconds) 
 void lightening_pulse(int pulselegth)
 {
   strip.setBrightness(lightning_brightness);
@@ -117,6 +97,33 @@ void lightening_pulse(int pulselegth)
   strip.show();
 }
 
+//  Simulate a random strike for (around) the specified 
+//  number of milliseconds.  This will essentially give some randomized
+//  'lightning' pulses for a certain amount of time.
+void lightening_rando_pulse(int totaltime)
+{
+  //  Keep track of light pulse time and gap time
+  int timeSpent = 0;
+  
+  //  For the amount of time specified ...
+  while (timeSpent < totaltime) {
+    //  Pick a random pulse time
+    int randPulseTime = random(10, 200);
+    
+    //  Pick a random delay time
+    int randDelayTime = random(5, 100);
+
+    //  Add both the pulse and delay times to the time spent
+    timeSpent = timeSpent + randPulseTime + randDelayTime;
+
+    //  Pulse & Delay
+    lightening_pulse(randPulseTime);  
+    delay(randDelayTime); //  Gap length
+  }
+  
+}
+
+//  Set the ambient light to the RGB values specified
 void set_ambient_lighting(int r, int g, int b)
 {
   strip.setBrightness(ambient_brightness);
