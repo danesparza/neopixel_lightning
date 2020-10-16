@@ -49,19 +49,19 @@ void loop() {
   
   /*
   //  LS1
-  lightening_pulse(100);
+  lightening_pulse(100, false);
   delay(100); //  Gap length
   
-  lightening_pulse(10);  
+  lightening_pulse(10, false);  
   delay(10); //  Gap length
 
-  lightening_pulse(10);
+  lightening_pulse(10, false);
   delay(10); //  Gap length
 
-  lightening_pulse(20);
+  lightening_pulse(20, false);
   delay(50); //  Gap length
 
-  lightening_pulse(10);
+  lightening_pulse(10, false);
   delay(10); //  Gap length
   //  LS1 END
   */
@@ -75,20 +75,27 @@ void loop() {
   
   //  Adjust the delay here, if you'd like.  Right now, it randomizes the 
   //  color switch delay to give a sense of realism
-  delay(random(5000,15000));
+  delay(random(5000,20000));
 }
 
 //  'Pulse' lightning for the specified amount of time (in milliseconds) 
-void lightening_pulse(int pulselegth)
+void lightening_pulse(int pulselength, bool randomizebrightness)
 {
-  strip.setBrightness(lightning_brightness);
+  int currentBrightness = lightning_brightness;
+  
+  if(randomizebrightness) 
+  {
+    currentBrightness = random(ambient_brightness, lightning_brightness);
+  }
+  
+  strip.setBrightness(currentBrightness);
   
   //  Show lightening pulse:
   for(int i=0; i<strip.numPixels(); i++) {    
     strip.setPixelColor(i,255,255,255);
   }
   strip.show();
-  delay(pulselegth); //  Show for pulse length
+  delay(pulselength); //  Show for pulse length
 
   //  Turn everything back off
   for(int i=0; i<strip.numPixels(); i++) {    
@@ -117,7 +124,7 @@ void lightening_rando_pulse(int totaltime)
     timeSpent = timeSpent + randPulseTime + randDelayTime;
 
     //  Pulse & Delay
-    lightening_pulse(randPulseTime);  
+    lightening_pulse(randPulseTime, true);  
     delay(randDelayTime); //  Gap length
   }
   
